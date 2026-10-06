@@ -1,4 +1,4 @@
-const API = " https://dummyjson.com/products?limit=0";
+const API = "https://dummyjson.com/products?limit=0";
 const CATEGORY_API = "https://dummyjson.com/products/categories"
 const productsContainer = document.querySelector("#products-container")
 const categoryFilters = document.querySelector("#category-filters")
