@@ -2,6 +2,7 @@ const API = " https://dummyjson.com/products?limit=0";
 const CATEGORY_API = "https://dummyjson.com/products/categories"
 const productsContainer = document.querySelector("#products-container")
 const categoryFilters = document.querySelector("#category-filters")
+const searchInput = document.querySelector("#search-input")
 
 async function fetchProducts(url) {
     productsContainer.innerHTML = "Loading";
@@ -103,6 +104,13 @@ categoryFilters.addEventListener("click", (e) => {
     }
 })
 
+
+searchInput.addEventListener("input" , (e)=>{
+    e.stopPropagation;
+    let value = searchInput.value;
+    const url = `https://dummyjson.com/products/search?q=${value}`
+    fetchProducts(url);
+})
 
 
 fetchProducts(API);
