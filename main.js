@@ -1,40 +1,38 @@
 const API = "https://dummyjson.com/products?limit=0";
-const CATEGORY_API = "https://dummyjson.com/products/categories"
-const productsContainer = document.querySelector("#products-container")
-const categoryFilters = document.querySelector("#category-filters")
-const searchInput = document.querySelector("#search-input")
+const CATEGORY_API = "https://dummyjson.com/products/categories";
+const productsContainer = document.querySelector("#products-container");
+const categoryFilters = document.querySelector("#category-filters");
+const searchInput = document.querySelector("#search-input");
+const wishlistCount = document.querySelector("#wishlist-count");
+const wishlistContainer = document.querySelector("#wishlist-container");
 
 async function fetchProducts(url) {
-    productsContainer.innerHTML = "Loading";
+  productsContainer.innerHTML = "Loading";
 
-    const response = await fetch(url);
-    const data = await response.json();
+  const response = await fetch(url);
+  const data = await response.json();
 
-    renderProduct(data.products);
+  renderProduct(data.products);
 }
-let allCategoris = []
-let wishlistproducts = JSON.parse(localStorage.getItem("wishlist")) || []
+let allCategoris = [];
+let wishlistproducts = [];
 async function fetchcategoris() {
+  const response = await fetch(CATEGORY_API);
+  const data = await response.json();
+  allCategoris = [{ name: "all", slug: "all", url: API }, ...data];
 
-    const response = await fetch(CATEGORY_API);
-    const data = await response.json();
-    allCategoris = [{ name: "all", slug: "all", url: API }, ...data];
-
-
-    rendercategories();
+  rendercategories();
 }
-
 
 function renderProduct(product) {
-    productsContainer.innerHTML = " ";
+  productsContainer.innerHTML = " ";
 
-
-    if (product.length > 0) {
-        product.forEach(p => {
-
-            let article = document.createElement("article")
-            article.className = "bg-white border border-slate-200 rounded-lg p-4 flex flex-col justify-between hover:border-slate-300 hover:shadow-sm transition";
-            card = ` 
+  if (product.length > 0) {
+    product.forEach((p) => {
+      let article = document.createElement("article");
+      article.className =
+        "bg-white border border-slate-200 rounded-lg p-4 flex flex-col justify-between hover:border-slate-300 hover:shadow-sm transition";
+      card = ` 
          
           <div class="h-48 w-full flex items-center justify-center p-3 mb-4 bg-white">
             <img src=${p.thumbnail}
@@ -58,106 +56,97 @@ function renderProduct(product) {
             </a>
           </div>
       
-    `
+    `;
 
-            article.innerHTML = card;
-            productsContainer.append(article)
-            // productsContainer.innerHTML = card;
-
-        });
-    }
-
-    else {
-        productsContainer.innerHTML = "product NOT found";
-    }
-
-
+      article.innerHTML = card;
+      productsContainer.append(article);
+      // productsContainer.innerHTML = card;
+    });
+  } else {
+    productsContainer.innerHTML = "product NOT found";
+  }
 }
 
 // fetchProducts();
 function formtCategory(category) {
-
-    return category.replace("-", " ");
+  return category.replace("-", " ");
 }
 
 function rendercategories(currrentCategry = "all") {
-    categoryFilters.innerHTML = " ";
-    // let allCategoris = [{ name: "all", slug: "all", url: API }, ...categories];
-    allCategoris.forEach(({ name, slug, url }) => {
-
-        let button = document.createElement("button")
-        if (currrentCategry === slug) {
-            button.className = "px-4 py-1.5 rounded-md text-sm font-medium bg-teal-700 capitalize text-white transition"
-        }
-        else {
-            button.className = "px-4 py-1.5 rounded-md text-sm font-medium bg-white text-slate-700 border border-slate-300  hover:bg-slate-100 transition";
-        }
-        // button.className = "px-4 py-1.5 rounded-md text-sm font-medium bg-white text-slate-700 border border-slate-300 capitalize hover:bg-slate-100 transition";
-        button.type = "button"
-        button.textContent = name;
-        button.dataset.category = slug;
-        button.dataset.url = url;
-        categoryFilters.append(button)
-    })
+  categoryFilters.innerHTML = " ";
+  // let allCategoris = [{ name: "all", slug: "all", url: API }, ...categories];
+  allCategoris.forEach(({ name, slug, url }) => {
+    let button = document.createElement("button");
+    if (currrentCategry === slug) {
+      button.className =
+        "px-4 py-1.5 rounded-md text-sm font-medium bg-teal-700 capitalize text-white transition";
+    } else {
+      button.className =
+        "px-4 py-1.5 rounded-md text-sm font-medium bg-white text-slate-700 border border-slate-300  hover:bg-slate-100 transition";
+    }
+    // button.className = "px-4 py-1.5 rounded-md text-sm font-medium bg-white text-slate-700 border border-slate-300 capitalize hover:bg-slate-100 transition";
+    button.type = "button";
+    button.textContent = name;
+    button.dataset.category = slug;
+    button.dataset.url = url;
+    categoryFilters.append(button);
+  });
 }
-
 
 if (categoryFilters) {
-    categoryFilters.addEventListener("click", (e) => {
-        e.stopPropagation();
-        const element = e.target;
+  categoryFilters.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const element = e.target;
 
-        if (element.type) {
-            const category = element.dataset.category;
-            const url = element.dataset.url;
-            // element.className = "px-4 py-1.5 rounded-md text-sm font-medium bg-teal-700 capitalize text-white transition";
-            rendercategories(category)
-            fetchProducts(url);
-        }
-    })
+    if (element.type) {
+      const category = element.dataset.category;
+      const url = element.dataset.url;
+      // element.className = "px-4 py-1.5 rounded-md text-sm font-medium bg-teal-700 capitalize text-white transition";
+      rendercategories(category);
+      fetchProducts(url);
+    }
+  });
 }
 
-function  cobvertToINR(price){
-     return (price * 96.33).toFixed(2);
+function cobvertToINR(price) {
+  return (price * 96.33).toFixed(2);
 }
 
 if (searchInput) {
-    searchInput.addEventListener("input", (e) => {
-        e.stopPropagation;
-        let value = searchInput.value;
-        const url = `https://dummyjson.com/products/search?q=${value}`;
-        fetchProducts(url);
-    })
-
+  searchInput.addEventListener("input", (e) => {
+    e.stopPropagation;
+    let value = searchInput.value;
+    const url = `https://dummyjson.com/products/search?q=${value}`;
+    fetchProducts(url);
+  });
 }
 
-
-function getItem (){
-
+function getItem(key) {
+  return JSON.parse(localStorage.getItem(key)) || [];
 }
 
-function setItem (){
-  
-}
-
+function setItem() {}
 
 async function loadProdctPage() {
-    const productdetailcontainer = document.querySelector("#product-detail-container");
-    if (!productdetailcontainer) {
-        return;
-    }
-    const params = new URLSearchParams(window.location.search)
-    const id = params.get("id");
-    const url = `https://dummyjson.com/products/${id}`;
-    productdetailcontainer.innerHTML = "Loading...."
-    const response = await fetch(url);
-    const data = await response.json();
-    if (data.message){
+  const productdetailcontainer = document.querySelector(
+    "#product-detail-container",
+  );
+  if (!productdetailcontainer) {
+    return;
+  }
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get("id");
+  const url = `https://dummyjson.com/products/${id}`;
+  productdetailcontainer.innerHTML = "Loading....";
+  const response = await fetch(url);
+  const data = await response.json();
+  if (data.message) {
     productdetailcontainer.textContent = "Failed to load Products";
-    return ; 
-    }
-    const {thumbnail,category, price ,rating , reviews ,title , description } = data;
-    const div = `  
+    return;
+  }
+  const { thumbnail, category, price, rating, reviews, title, description } =
+    data;
+  const div = `  
         
         <div class="bg-white border border-slate-200 rounded-lg p-8 flex items-center justify-center min-h-[350px] md:min-h-[440px]">
           <img 
@@ -267,38 +256,52 @@ ${description}             </p>
           </div>
     </div>
         </div>
-      `
-     productdetailcontainer.innerHTML = div;
+      `;
+  productdetailcontainer.innerHTML = div;
 
-const addtoWishListBtn = document.querySelector("#add-to-wishlist-btn");
-addtoWishListBtn.addEventListener("click" , (e)=>{
-  e.preventDefault();
-  wishlistproducts.push(data)
-  localStorage.setItem("wishlist",JSON.stringify(wishlistproducts))
-  console.log(wishlistproducts);
+  const addtoWishListBtn = document.querySelector("#add-to-wishlist-btn");
+  addtoWishListBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    const wishlistproducts = getItem("wishlist");
+    const isexsit = wishlistproducts.some((p) => p.id === data.id);
+    if (!isexsit) {
+      localStorage.setItem(
+        "wishlist",
+        JSON.stringify([data, ...wishlistproducts]),
+      );
+    }
+    // else {
+    //   localStorage.setItem(
+    //     "wishlist",
+    //     JSON.stringify([data, ...wishlistproducts]),
+    //     updateWishListCount()
+    //   );
+    // }
 
-})
+    // wishlistproducts.push(data)
+    // localStorage.setItem("wishlist",JSON.stringify([data, ...wishlistproducts]))
+  });
 }
 loadProdctPage();
 
 if (productsContainer) {
-    productsContainer.addEventListener("click", (e) => {
-        e.stopPropagation();
-       
-    })
+  productsContainer.addEventListener("click", (e) => {
+    e.stopPropagation();
+  });
 
+  fetchProducts(API);
 
-
-
-    fetchProducts(API);
-
-    fetchcategoris();
-
+  fetchcategoris();
 }
 
 
+function updateWishListCount() {
+  wishlistCount.textContent = getItem("wishlist").length;
+}
+updateWishListCount();
+
 
 // function init() {
-   
+
 // }
 // init()
