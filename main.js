@@ -415,14 +415,10 @@ ${title}              </a>
     }
 
   }
-    updatecartCount()
+  updatecartCount()
 
 }
 loadwishListPage();
-
-
-
-
 
 if (productsContainer) {
   productsContainer.addEventListener("click", (e) => {
