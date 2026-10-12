@@ -563,6 +563,8 @@ function loadCart() {
 
   cartContainer.querySelectorAll(".cart-qty-minus").forEach((btn) => {
     btn.addEventListener("click", (e) => {
+      const id = e.currentTarget.dataset.id;
+
       const span = e.currentTarget.nextElementSibling;
       let value = Number(span.textContent)
       if (value <= 1) {
@@ -592,12 +594,13 @@ function updatecartItemquantity(id, quantity) {
     if (item.id === Number(id)) {
       return {
         ...item,
-        quantity,
+        quantity: Number(quantity),
       };
     };
     return item;
   })
-  setItem("cart", [data, ...filterProduct]);
+  setItem("cart", filterProduct);
+  updatecartCount();
   loadCart()
 }
 
@@ -626,12 +629,9 @@ function init() {
 
     fetchcategoris();
   }
-  loadProdctPage();
-  loadwishListPage()
   updatecartCount();
   updateWishListCount();
   loadProdctPage()
-  loadwishListPage();
   loadCart();
   if (searchInput) {
     searchInput.addEventListener("input", (e) => {
