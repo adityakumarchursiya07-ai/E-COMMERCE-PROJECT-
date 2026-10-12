@@ -34,7 +34,6 @@ async function loadProdctPage() {
   }
   const params = new URLSearchParams(window.location.search);
   const id = params.get("id");
-  console.log(id);
   const url = `https://dummyjson.com/products/${id}`;
   productdetailcontainer.innerHTML = "Loading....";
   const response = await fetch(url);
@@ -158,7 +157,6 @@ ${description}             </p>
       `;
   productdetailcontainer.innerHTML = div;
   const qtyValue = document.querySelector("#qty-value")
-  // console.log(qtyValue);
   document.querySelector("#qty-plus").addEventListener("click", (e) => {
     e.stopPropagation()
     qtyValue.textContent = Number(qtyValue.textContent) + 1
@@ -456,8 +454,7 @@ function loadCart() {
   div1.className = "lg:col-span-2 bg-white border border-slate-200 rounded-lg divide-y divide-slate-200 overflow-hidden shadow-sm";
   let totalPrice = 0;
   cardData.forEach(item => {
-    const { id, thumbnail, title, price, quantity } = item;
-    console.log(title);
+    const { id, thumbnail, title, price, quantity } = item
     totalPrice = totalPrice + price * quantity;
     const divItem = document.createElement("div")
     divItem.className = "p-4 sm:p-6 flex flex-col sm:flex-row items-center gap-4 sm:gap-6 justify-between"
